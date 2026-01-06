@@ -1,0 +1,468 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookVault | Your Personal Digital Library</title>
+    <style>
+        /* Modern BookVault Theme */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        header {
+            background-color: #0f172a; /* Midnight Blue */
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #38bdf8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=1200');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: -50px auto 50px;
+            padding: 0 20px;
+        }
+
+        /* Filter Section inspired by image reference */
+        .search-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #38bdf8;
+        }
+
+        .search-box { flex: 3; min-width: 250px; }
+        .filter-dropdown { flex: 1; min-width: 150px; }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 30px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            background-color: #f1f5f9;
+        }
+
+        .book-details {
+            padding: 20px;
+        }
+
+        .genre-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #0ea5e9;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-author {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .book-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-weight: 800;
+            color: #0f172a;
+            font-size: 1.1rem;
+        }
+
+        .btn-add {
+            background-color: #0f172a;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-add:hover {
+            background-color: #334155;
+        }
+
+        /* Detail Modal Styling */
+        #book-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 16px;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-left { flex: 1; }
+        .modal-right { flex: 1.2; padding: 40px; }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        #no-data {
+            text-align: center;
+            padding: 100px 0;
+            color: #94a3b8;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">📖 BookVault</div>
+        <nav class="nav-links">
+            <a href="#">Explore</a>
+            <a href="#">Categories</a>
+            <a href="#">My Vault</a>
+            <a href="#">New Arrivals</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Unlock Your Next Adventure</h1>
+        <p>Curated collections of the world's most influential books, at your fingertips.</p>
+    </section>
+
+    <div class="main-container">
+        
+        <!-- Search & Filters -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by title, author, or ISBN..." oninput="filterBooks()">
+            
+            <select id="genreFilter" class="filter-dropdown" onchange="filterBooks()">
+                <option value="">All Genres</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Science">Science</option>
+                <option value="Business">Business</option>
+                <option value="History">History</option>
+                <option value="Self-Help">Self-Help</option>
+            </select>
+
+            <select id="availabilityFilter" class="filter-dropdown" onchange="filterBooks()">
+                <option value="">All Formats</option>
+                <option value="Hardcover">Hardcover</option>
+                <option value="E-Book">E-Book</option>
+                <option value="Audiobook">Audiobook</option>
+            </select>
+        </div>
+
+        <div class="section-header">
+            <h2>Featured Collection</h2>
+        </div>
+        
+        <div id="bookGrid" class="book-grid">
+            <!-- JavaScript will populate this -->
+        </div>
+
+        <div id="no-data" style="display:none;">
+            <h3>No books match your criteria.</h3>
+            <p>Try broadening your search or choosing another genre.</p>
+        </div>
+
+    </div>
+
+    <!-- Detail Modal Overlay -->
+    <div id="book-overlay" onclick="if(event.target == this) closeDetails()">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDetails()">&times;</span>
+            <div class="modal-left">
+                <img id="modalImg" src="" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <div class="modal-right" id="modalDetails">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 BookVault International. Empowering readers globally.</p>
+        <div style="margin-top: 10px;">
+            <a href="#" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Terms</a>
+            <a href="#" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Privacy</a>
+            <a href="#" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Support</a>
+        </div>
+    </footer>
+
+    <script>
+        // DATA: The Library Catalog
+        var catalog = [
+            {
+                id: 1,
+                title: "The Silent Patient",
+                author: "Alex Michaelides",
+                genre: "Fiction",
+                format: "Hardcover",
+                price: "₹499",
+                img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400",
+                summary: "A shocking psychological thriller about a woman's act of violence against her husband—and the therapist obsessed with uncovering her motive."
+            },
+            {
+                id: 2,
+                title: "Atomic Habits",
+                author: "James Clear",
+                genre: "Self-Help",
+                format: "E-Book",
+                price: "₹299",
+                img: "https://images.unsplash.com/photo-1589998059171-988d887df64e?auto=format&fit=crop&q=80&w=400",
+                summary: "The definitive guide to breaking bad behaviors and adopting good ones in four steps, showing you how small, incremental, everyday routines compound into massive, positive change over time."
+            },
+            {
+                id: 3,
+                title: "A Brief History of Time",
+                author: "Stephen Hawking",
+                genre: "Science",
+                format: "Audiobook",
+                price: "₹650",
+                img: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=400",
+                summary: "Stephen Hawking explains the most complex concepts of cosmology—from the Big Bang to black holes—in language that anyone can understand."
+            },
+            {
+                id: 4,
+                title: "The Intelligent Investor",
+                author: "Benjamin Graham",
+                genre: "Business",
+                format: "Hardcover",
+                price: "₹750",
+                img: "https://images.unsplash.com/photo-1592492159418-39f319320569?auto=format&fit=crop&q=80&w=400",
+                summary: "The classic text on value investing, providing strategies for long-term investment success while avoiding common emotional pitfalls."
+            },
+            {
+                id: 5,
+                title: "Sapiens",
+                author: "Yuval Noah Harari",
+                genre: "History",
+                format: "E-Book",
+                price: "₹420",
+                img: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=400",
+                summary: "A provocative account of human history from the first humans to walk the earth to the radical transformations of the Cognitive, Agricultural, and Scientific Revolutions."
+            }
+        ];
+
+        var grid = document.getElementById('bookGrid');
+        var searchInput = document.getElementById('searchInput');
+        var genreFilter = document.getElementById('genreFilter');
+        var formatFilter = document.getElementById('availabilityFilter');
+        var overlay = document.getElementById('book-overlay');
+
+        // FUNCTION: Render the UI cards
+        function renderLibrary(data) {
+            grid.innerHTML = "";
+            
+            if(data.length == 0) {
+                document.getElementById('no-data').style.display = "block";
+                return;
+            } else {
+                document.getElementById('no-data').style.display = "none";
+            }
+
+            for(var i = 0; i < data.length; i++) {
+                var book = data[i];
+                
+                var cardHTML = 
+                    '<div class="book-card" onclick="openDetails(' + book.id + ')">' +
+                        '<img src="' + book.img + '" class="book-cover">' +
+                        '<div class="book-details">' +
+                            '<span class="genre-tag">' + book.genre + '</span>' +
+                            '<div class="book-title">' + book.title + '</div>' +
+                            '<div class="book-author">' + book.author + '</div>' +
+                            '<div class="book-footer">' +
+                                '<div class="price">' + book.price + '</div>' +
+                                '<button class="btn-add">View More</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                
+                grid.innerHTML += cardHTML;
+            }
+        }
+
+        // FUNCTION: Handle Searching and Filtering
+        window.filterBooks = function() {
+            var sValue = searchInput.value.toLowerCase();
+            var gValue = genreFilter.value;
+            var fValue = formatFilter.value;
+            var filtered = [];
+
+            for(var i = 0; i < catalog.length; i++) {
+                var item = catalog[i];
+                
+                var matchesSearch = item.title.toLowerCase().indexOf(sValue) != -1 || item.author.toLowerCase().indexOf(sValue) != -1;
+                var matchesGenre = (gValue == "" || item.genre == gValue);
+                var matchesFormat = (fValue == "" || item.format == fValue);
+
+                if(matchesSearch && matchesGenre && matchesFormat) {
+                    filtered.push(item);
+                }
+            }
+            renderLibrary(filtered);
+        }
+
+        // FUNCTION: Modal Interaction
+        window.openDetails = function(id) {
+            var selected = null;
+            for(var i = 0; i < catalog.length; i++) {
+                if(catalog[i].id == id) {
+                    selected = catalog[i];
+                    break;
+                }
+            }
+
+            if(selected) {
+                document.getElementById('modalImg').src = selected.img;
+                document.getElementById('modalDetails').innerHTML = 
+                    '<span class="genre-tag">' + selected.genre + '</span>' +
+                    '<h1 style="margin: 10px 0; color: #0f172a;">' + selected.title + '</h1>' +
+                    '<p style="color:#64748b; font-size: 18px;">by ' + selected.author + '</p>' +
+                    '<hr style="border:0; border-top: 1px solid #e2e8f0; margin: 20px 0;">' +
+                    '<p style="line-height: 1.6; color: #475569;">' + selected.summary + '</p>' +
+                    '<div style="margin-top:30px;">' +
+                        '<p><strong>Available Format:</strong> ' + selected.format + '</p>' +
+                        '<p style="font-size: 24px; font-weight: bold; color: #0f172a;">' + selected.price + '</p>' +
+                    '</div>' +
+                    '<button class="btn-add" style="width:100%; padding: 15px; font-size: 16px; margin-top: 20px;" onclick="alert(\'Added to your Digital Vault!\')">Add to Vault</button>';
+                
+                overlay.style.display = "flex";
+                document.body.style.overflow = "hidden"; // Prevent background scroll
+            }
+        }
+
+        window.closeDetails = function() {
+            overlay.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        // Startup
+        document.addEventListener('DOMContentLoaded', function() {
+            renderLibrary(catalog);
+        });
+    </script>
+</body>
+</html>
