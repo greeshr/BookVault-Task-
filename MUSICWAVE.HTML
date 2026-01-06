@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicWave India - Discover Live Events</title>
+    
+    <style>
+        /* CSS for a premium dark Indian theme */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a; /* Midnight Blue */
+            color: #f8fafc;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(90deg, #1e1b4b 0%, #312e81 100%);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid #6366f1;
+        }
+        h1 {
+            color: #818cf8;
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .search-area {
+            background-color: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid #334155;
+        }
+        input, select {
+            padding: 12px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            background-color: #0f172a;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            min-width: 250px;
+        }
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .event-card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid #334155;
+        }
+        .event-card:hover {
+            transform: translateY(-8px);
+            border-color: #818cf8;
+        }
+        .event-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .event-content {
+            padding: 20px;
+        }
+        .event-title {
+            font-size: 1.4em;
+            color: #fbbf24; /* Amber/Gold for Indian royalty vibe */
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .event-artist {
+            color: #38bdf8;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .event-info {
+            font-size: 0.9em;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .event-action {
+            display: flex;
+            gap: 10px;
+        }
+        .event-action button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .details-btn {
+            background-color: #475569;
+            color: white;
+        }
+        .details-btn:hover {
+            background-color: #64748b;
+        }
+        .interest-btn {
+            background-color: #e11d48; /* Crimson */
+            color: white;
+        }
+        .interest-btn.interested {
+            background-color: #10b981; /* Success Green */
+        }
+        .interest-btn:hover {
+            opacity: 0.9;
+        }
+        #no-results {
+            text-align: center;
+            font-size: 1.2em;
+            color: #64748b;
+            padding: 50px;
+        }
+        #details-section {
+            background-color: #1e1b4b;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 40px;
+            border: 2px solid #818cf8;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>🇮🇳 MusicWave India</h1>
+            <p>Your Gateway to the Best Live Music in Bharat</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="search-area">
+            <input type="text" id="search-input" placeholder="Search Artists (Arijit, Prateek, King...)" oninput="applyFilters()">
+            
+            <select id="genre-filter" onchange="applyFilters()">
+                <option value="">All Genres</option>
+                <option value="Bollywood">Bollywood</option>
+                <option value="Indie-Folk">Indie-Folk</option>
+                <option value="Hip-Hop">Hip-Hop / Desi Beam</option>
+                <option value="Sufi-Fusion">Sufi-Fusion</option>
+                <option value="Electronic">Electronic / Techno</option>
+            </select>
+            
+            <select id="location-filter" onchange="applyFilters()">
+                <option value="">All Cities</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="New Delhi">New Delhi</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Pune">Pune</option>
+            </select>
+        </section>
+
+        <section>
+            <h2 style="color:#f8fafc; margin-bottom: 25px; border-left: 4px solid #fbbf24; padding-left: 15px;">Trending Tours & Concerts</h2>
+            <div id="event-list" class="event-grid"></div>
+            <p id="no-results" style="display:none;">हम माफ़ी चाहते हैं! No events found for your search.</p>
+        </section>
+
+        <section id="details-section"></section>
+
+    </div>
+
+    <script>
+        let events = [
+            { 
+                id: 1, 
+                name: "Arijit Singh Soulful Night", 
+                artist: "Arijit Singh", 
+                date: "Jan 25, 2026", 
+                time: "7:00 PM", 
+                location: "Mumbai", 
+                venue: "Jio World Garden, BKC",
+                genre: "Bollywood", 
+                interest: false, 
+                imageUrl: "https://placehold.co/600x400/1e1b4b/fbbf24?text=Arijit+Singh+Live", 
+                venueMapUrl: "https://placehold.co/400x300/0f172a/818cf8?text=Jio+Garden+Map" 
+            },
+            { 
+                id: 2, 
+                name: "Dastakhat India Tour", 
+                artist: "Anuv Jain", 
+                date: "Feb 14, 2026", 
+                time: "6:00 PM", 
+                location: "Hyderabad", 
+                venue: "Gachibowli Indoor Stadium",
+                genre: "Indie-Folk", 
+                interest: false, 
+                imageUrl: "https://placehold.co/600x400/1e1b4b/38bdf8?text=Anuv+Jain+Tour", 
+                venueMapUrl: "https://placehold.co/400x300/0f172a/818cf8?text=Gachibowli+Map" 
+            },
+            { 
+                id: 3, 
+                name: "P-Pop Culture India Tour", 
+                artist: "Karan Aujla", 
+                date: "Feb 28, 2026", 
+                time: "8:00 PM", 
+                location: "New Delhi", 
+                venue: "Jawaharlal Nehru Stadium",
+                genre: "Hip-Hop", 
+                interest: false, 
+                imageUrl: "https://placehold.co/600x400/1e1b4b/e11d48?text=Karan+Aujla+Live", 
+                venueMapUrl: "https://placehold.co/400x300/0f172a/818cf8?text=JLN+Stadium+Map" 
+            },
+            { 
+                id: 4, 
+                name: "The 24K Show", 
+                artist: "Sona Mohapatra", 
+                date: "Jan 12, 2026", 
+                time: "7:30 PM", 
+                location: "Mumbai", 
+                venue: "Grand Theatre, NMACC",
+                genre: "Sufi-Fusion", 
+                interest: false, 
+                imageUrl: "https://placehold.co/600x400/1e1b4b/fbbf24?text=Sona+Mohapatra", 
+                venueMapUrl: "https://placehold.co/400x300/0f172a/818cf8?text=NMACC+Map" 
+            },
+            { 
+                id: 5, 
+                name: "Echoes of Earth", 
+                artist: "Stavroz & Indian Fusion Acts", 
+                date: "Dec 13, 2025", 
+                time: "4:00 PM", 
+                location: "Bangalore", 
+                venue: "Embassy International Riding School",
+                genre: "Electronic", 
+                interest: false, 
+                imageUrl: "https://placehold.co/600x400/064e3b/10b981?text=Echoes+of+Earth", 
+                venueMapUrl: "https://placehold.co/400x300/0f172a/818cf8?text=Bangalore+Venue+Map" 
+            }
+        ];
+
+        var eventListEl = document.getElementById('event-list');
+        var searchInput = document.getElementById('search-input');
+        var genreFilter = document.getElementById('genre-filter');
+        var locationFilter = document.getElementById('location-filter');
+        var noResultsEl = document.getElementById('no-results');
+        var detailsSection = document.getElementById('details-section');
+
+        function renderEvents(filteredEvents) {
+            eventListEl.innerHTML = '';
+            if (filteredEvents.length === 0) {
+                noResultsEl.style.display = 'block';
+                return;
+            } else {
+                noResultsEl.style.display = 'none';
+            }
+
+            for (let i = 0; i < filteredEvents.length; i++) {
+                let event = filteredEvents[i]; 
+                let buttonClasses = event.interest ? 'interest-btn interested' : 'interest-btn';
+                let buttonText = event.interest ? '✅ Going!' : '❤️ I\'m Interested';
+                
+                let cardHTML = 
+                    '<div class="event-card">' +
+                        '<img src="' + event.imageUrl + '" alt="' + event.name + '" class="event-image">' +
+                        '<div class="event-content">' +
+                            '<div class="event-title">' + event.name + '</div>' +
+                            '<div class="event-artist">' + event.artist + '</div>' +
+                            '<div class="event-info">' +
+                                '🗓️ ' + event.date + ' | ' + event.time + ' <br>' +
+                                '📍 ' + event.location + ' (' + event.genre + ')' +
+                            '</div>' +
+                            '<div class="event-action">' +
+                                '<button class="details-btn" onclick="showEventDetails(' + event.id + ')">Details</button>' +
+                                '<button class="' + buttonClasses + '" onclick="toggleInterest(' + event.id + ')">' + buttonText + '</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+
+                eventListEl.innerHTML += cardHTML;
+            }
+        }
+
+        window.applyFilters = function() {
+            let searchText = searchInput.value.toLowerCase();
+            let selectedGenre = genreFilter.value;
+            let selectedLocation = locationFilter.value;
+            let filteredEvents = [];
+
+            for (let i = 0; i < events.length; i++) {
+                let event = events[i];
+                let matchesSearch = event.name.toLowerCase().includes(searchText) || 
+                                    event.artist.toLowerCase().includes(searchText);
+                let matchesGenre = (selectedGenre === "" || event.genre === selectedGenre);
+                let matchesLocation = (selectedLocation === "" || event.location === selectedLocation);
+
+                if (matchesSearch && matchesGenre && matchesLocation) {
+                    filteredEvents.push(event);
+                }
+            }
+            renderEvents(filteredEvents);
+        }
+
+        window.toggleInterest = function(eventId) {
+            for (let i = 0; i < events.length; i++) {
+                if (events[i].id === eventId) {
+                    events[i].interest = !events[i].interest;
+                    break;
+                }
+            }
+            applyFilters();
+        }
+
+        window.showEventDetails = function(eventId) {
+            let event = events.find(e => e.id === eventId);
+            if (!event) return;
+
+            detailsSection.innerHTML = 
+                '<h3 style="color:#fbbf24; font-size: 1.8em; margin-bottom: 20px;">' + event.name + '</h3>' +
+                '<div style="display: flex; flex-wrap: wrap; gap: 30px;">' +
+                    '<div style="flex: 1; min-width: 300px;">' +
+                        '<p><strong>Lead Artist:</strong> ' + event.artist + '</p>' +
+                        '<p><strong>Genre:</strong> ' + event.genre + '</p>' +
+                        '<p><strong>City:</strong> ' + event.location + '</p>' +
+                        '<p><strong>Venue:</strong> ' + event.venue + '</p>' +
+                        '<p><strong>Schedule:</strong> ' + event.date + ' at ' + event.time + '</p>' +
+                        '<p style="margin-top:20px; color:#94a3b8; font-style:italic;">Note: Tickets are selling fast for this show in ' + event.location + '. Book soon via partner apps!</p>' +
+                    '</div>' +
+                    '<div style="flex: 1; min-width: 300px;">' +
+                        '<p style="font-weight: bold; color: #38bdf8;">Venue Layout:</p>' +
+                        '<img src="' + event.venueMapUrl + '" alt="Venue Map" style="width: 100%; border-radius: 8px; border: 1px solid #475569;">' +
+                    '</div>' +
+                '</div>' +
+                '<button onclick="this.parentElement.style.display=\'none\'" style="margin-top:20px; background:#475569; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Close Details</button>';
+            
+            detailsSection.style.display = 'block'; 
+            detailsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', applyFilters);
+    </script>
+</body>
+</html>
